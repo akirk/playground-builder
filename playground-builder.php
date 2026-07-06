@@ -38,7 +38,7 @@ add_action( 'plugins_loaded', function() {
         // App identity
         // 'app_name'     => 'Playground Builder',
         // 'my_apps'      => true,
-        // 'my_apps_icon' => null,
+        'my_apps_icon' => plugins_url( 'assets/icon.png', __FILE__ ),
     ] );
     $app->init();
 } );
