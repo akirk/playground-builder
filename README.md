@@ -11,6 +11,10 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Compose WordPress Playground blueprints from plugins, themes, versions, language settings, and launch URLs.
 
+[Try it in WordPress Playground](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/akirk/playground-builder/main/blueprint.json)
+
+[Try it in OpenStation](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/akirk/playground-builder/main/blueprint-openstation.json) — the same app opened in desktop mode with the [OpenStation](https://github.com/WordPress/openstation) plugin.
+
 ## Description
 
 Playground Builder is a WordPress app for creating shareable WordPress Playground links. It helps you build a Playground configuration by searching WordPress.org plugins and themes, choosing runtime settings, and copying either a Query API link or a full blueprint link.
