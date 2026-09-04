@@ -1,15 +1,23 @@
 <?php
-$asset_url = static function( string $path ): string {
-	$relative_path = 'assets/' . ltrim( $path, '/' );
-	$file_path = dirname( __DIR__ ) . '/' . $relative_path;
-	$url = plugins_url( $relative_path, dirname( __DIR__ ) . '/playground-builder.php' );
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-	if ( file_exists( $file_path ) ) {
-		$url = add_query_arg( 'ver', filemtime( $file_path ), $url );
-	}
+// Cache-bust with the file modification time so app assets refresh on update.
+wp_enqueue_style(
+	'playground-builder',
+	plugins_url( 'assets/playground-builder.css', dirname( __DIR__ ) . '/playground-builder.php' ),
+	[],
+	file_exists( dirname( __DIR__ ) . '/assets/playground-builder.css' ) ? (string) filemtime( dirname( __DIR__ ) . '/assets/playground-builder.css' ) : false
+);
 
-	return $url;
-};
+wp_enqueue_script(
+	'playground-builder',
+	plugins_url( 'assets/playground-builder.js', dirname( __DIR__ ) . '/playground-builder.php' ),
+	[],
+	file_exists( dirname( __DIR__ ) . '/assets/playground-builder.js' ) ? (string) filemtime( dirname( __DIR__ ) . '/assets/playground-builder.js' ) : false,
+	true
+);
 
 add_filter(
 	'pre_get_document_title',
@@ -180,7 +188,6 @@ $config = [
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="<?php echo esc_url( $asset_url( 'playground-builder.css' ) ); ?>">
 	<?php wp_app_head(); ?>
 </head>
 <body>
@@ -299,7 +306,6 @@ $config = [
 		</div>
 	</main>
 
-	<script src="<?php echo esc_url( $asset_url( 'playground-builder.js' ) ); ?>" defer></script>
 	<?php wp_app_body_close(); ?>
 </body>
 </html>
