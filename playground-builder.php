@@ -1,12 +1,19 @@
 <?php
 /**
  * Plugin Name: Playground Builder
- * Description: A WordPress app powered by WpApp.
+ * Plugin URI: https://github.com/akirk/playground-builder
+ * Description: Build shareable WordPress Playground links: pick plugins, themes, WordPress and PHP versions, a language and a start page, then copy the link.
  * Version: 1.0.0
- * Author: Alex Kirk
- * Text Domain: playground-builder
+ * Requires at least: 6.0
  * Tested up to: 7.1
  * Requires PHP: 7.4
+ * Author: Alex Kirk
+ * Author URI: https://alex.kirk.at/
+ * License: GPL-2.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain: playground-builder
+ *
+ * @package Playground_Builder
  */
 
 namespace PlaygroundBuilder;
