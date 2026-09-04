@@ -1,7 +1,7 @@
 # Playground Builder
 
 - Contributors: akirk
-- Tags: blueprints, demo, sandbox, testing, developer-tools
+- Tags: blueprints, demo, sandbox, developer-tools, wp-app
 - Requires at least: 6.0
 - Requires PHP: 7.4
 - Tested up to: 7.1
