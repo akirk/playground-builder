@@ -74,6 +74,7 @@ For steps beyond installing packages and setting versions, the app links out to 
 ## Screenshots
 
 1. The Playground Builder app for searching plugins and themes, selecting runtime options, and copying a Playground link.
+2. Choosing plugins on a phone: the search field above the results, each with the button that adds it to the blueprint.
 
 ## Changelog
 
