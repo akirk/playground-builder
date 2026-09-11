@@ -182,6 +182,8 @@ $config = [
 		],
 	],
 ];
+
+wp_localize_script( 'playground-builder', 'playgroundBuilderConfig', $config );
 ?>
 <!DOCTYPE html>
 <html <?php wp_app_language_attributes(); ?>>
@@ -193,7 +195,7 @@ $config = [
 <body>
 	<?php wp_app_body_open(); ?>
 
-	<main class="playground-builder" data-playground-builder data-playground-builder-config="<?php echo esc_attr( wp_json_encode( $config, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ) ); ?>">
+	<main class="playground-builder" data-playground-builder>
 		<div class="playground-builder__inner">
 			<header class="playground-builder__header">
 				<div class="playground-builder__mark" aria-hidden="true"></div>
