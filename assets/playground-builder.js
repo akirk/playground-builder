@@ -5,7 +5,7 @@
 		return;
 	}
 
-	const config = JSON.parse( app.querySelector( '#playground-builder-config' ).textContent );
+	const config = window.playgroundBuilderConfig || {};
 	const strings = config.strings;
 	const state = {
 		tab: config.defaultTab,
