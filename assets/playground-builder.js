@@ -296,7 +296,10 @@
 		const user = favorites ? trimmed : '';
 
 		if ( user ) {
-			params.set( 'request[browse]', 'favorites' );
+			// The plugins API queries favorites by user alone; themes also need browse.
+			if ( tab === 'themes' ) {
+				params.set( 'request[browse]', 'favorites' );
+			}
 			params.set( 'request[user]', user );
 		} else if ( trimmed ) {
 			params.set( 'request[search]', trimmed );
