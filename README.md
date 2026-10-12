@@ -65,7 +65,7 @@ Yes. Paste a GitHub, GitLab, or ZIP URL into the search field. Playground Builde
 
 ### Does it need an internet connection?
 
-Searching queries the WordPress.org plugin and theme directories, so results need a connection. If wordpress.org cannot be reached, the app falls back to a small built-in list of well-known plugins and themes so you can still assemble a build.
+Searching queries the WordPress.org plugin and theme directories, so results need a connection. Choose the Favorites tab and enter a WordPress.org username to browse that user’s favorite plugins and themes together. All pages of favorites are loaded so each item can be added to your build. Favorites require a connection and do not use fallback suggestions. If wordpress.org cannot be reached, the app falls back to a small built-in list of well-known plugins and themes so you can still assemble a build.
 
 ### Can I build more complicated blueprints?
 
