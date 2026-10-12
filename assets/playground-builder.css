@@ -526,6 +526,12 @@ a:focus-visible {
 	word-break: break-all;
 }
 
+.playground-builder__link.is-blueprint {
+	white-space: pre-wrap;
+	word-break: normal;
+	overflow-wrap: anywhere;
+}
+
 .playground-builder__caption-link {
 	border: 0;
 	background: transparent;
@@ -569,33 +575,6 @@ a:focus-visible {
 	font-weight: 600;
 	padding: 0 15px;
 	text-decoration: none;
-}
-
-.playground-builder__json-toggle {
-	margin-top: 11px;
-	border: 0;
-	background: none;
-	color: #8a8f9a;
-	font-size: 12.5px;
-	padding: 0;
-}
-
-.playground-builder__json {
-	display: none;
-	max-height: 220px;
-	overflow: auto;
-	margin: 8px 0 0;
-	border-radius: 9px;
-	background: #0f1116;
-	color: #c7d0e0;
-	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-	font-size: 11px;
-	line-height: 1.55;
-	padding: 12px;
-}
-
-.playground-builder__json.is-visible {
-	display: block;
 }
 
 @media (max-width: 900px) {

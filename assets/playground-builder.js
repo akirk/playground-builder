@@ -22,7 +22,6 @@
 		landingPage: config.defaultLandingPage,
 		customLandingPage: '/',
 		linkMode: 'query',
-		showJson: false,
 		copied: false,
 	};
 
@@ -44,8 +43,7 @@
 		advancedBlueprint: app.querySelector( '[data-advanced-blueprint]' ),
 		copy: app.querySelector( '[data-copy]' ),
 		buildSummary: app.querySelector( '[data-build-summary]' ),
-		json: app.querySelector( '[data-json]' ),
-		jsonToggle: app.querySelector( '[data-json-toggle]' ),
+		outputLabel: app.querySelector( '[data-output-label]' ),
 	};
 
 	function decodeHtml( value ) {
@@ -679,12 +677,11 @@
 			.replace( '%1$s', text( 'pluginCount', pluginCount ) )
 			.replace( '%2$s', themeSummary );
 		renderFormatCaption( linkMode );
-		els.link.textContent = link;
+		els.link.textContent = linkMode === 'blueprint' ? JSON.stringify( blueprint, null, 2 ) : link;
+		els.link.classList.toggle( 'is-blueprint', linkMode === 'blueprint' );
+		els.outputLabel.textContent = linkMode === 'blueprint' ? strings.blueprintJson : strings.shareableLink;
 		els.open.href = link;
 		els.advancedBlueprint.href = advancedBlueprintUrl();
-		els.json.textContent = JSON.stringify( blueprint, null, 2 );
-		els.json.classList.toggle( 'is-visible', state.showJson );
-		els.jsonToggle.textContent = state.showJson ? strings.hideJson : strings.viewJson;
 		els.copy.textContent = state.copied ? strings.copied : strings.copyLink;
 		els.copy.classList.toggle( 'is-copied', state.copied );
 		els.customLandingPage.hidden = state.landingPage !== 'custom';
@@ -915,10 +912,6 @@
 	} );
 
 	els.copy.addEventListener( 'click', copyLink );
-	els.jsonToggle.addEventListener( 'click', () => {
-		state.showJson = ! state.showJson;
-		renderSummary();
-	} );
 
 	els.landingPage.value = state.landingPage;
 	render();
