@@ -500,6 +500,10 @@ a:focus-visible {
 	padding: 9px 10px;
 }
 
+.playground-builder [data-custom-landing] {
+	margin-top: 1em;
+}
+
 .playground-builder__output {
 	border-top: 1px solid #eef0f3;
 	background: #fafbfc;
