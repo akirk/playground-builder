@@ -95,7 +95,8 @@ $strings = [
 	'empty' => __( 'empty', 'playground-builder' ),
 	'featuredInfo' => __( 'Featured plugins highlight rotating hidden gems from WordPress.org and refresh every two weeks.', 'playground-builder' ),
 	'featuredInfoLink' => __( 'Learn more', 'playground-builder' ),
-	'hideJson' => __( 'Hide blueprint JSON', 'playground-builder' ),
+	'blueprintJson' => __( 'Blueprint JSON', 'playground-builder' ),
+	'shareableLink' => __( 'Shareable link', 'playground-builder' ),
 	'authorPreview' => __( 'Demo in WordPress Playground', 'playground-builder' ),
 	'linkModeBlueprint' => __( 'Blueprint', 'playground-builder' ),
 	'linkModeQuery' => __( 'Query API', 'playground-builder' ),
@@ -129,7 +130,6 @@ $strings = [
 	'themeCountPlural' => __( '%d themes', 'playground-builder' ),
 	'useTheme' => __( 'Use', 'playground-builder' ),
 	'usingTheme' => __( 'Using', 'playground-builder' ),
-	'viewJson' => __( 'View blueprint JSON', 'playground-builder' ),
 	'wordpressOrg' => __( 'wordpress.org', 'playground-builder' ),
 	'defaultThemeKind' => __( 'Default theme', 'playground-builder' ),
 	'defaultThemeSummary' => __( 'default theme', 'playground-builder' ),
@@ -290,7 +290,7 @@ wp_localize_script( 'playground-builder', 'playgroundBuilderConfig', $config );
 
 					<div class="playground-builder__output">
 						<div class="playground-builder__output-head">
-							<span class="playground-builder__output-label"><?php echo esc_html__( 'Shareable link', 'playground-builder' ); ?></span>
+							<span class="playground-builder__output-label" data-output-label><?php echo esc_html__( 'Shareable link', 'playground-builder' ); ?></span>
 							<span class="playground-builder__caption" data-build-summary></span>
 						</div>
 						<div class="playground-builder__link playground-builder__scroll" data-link></div>
@@ -298,8 +298,6 @@ wp_localize_script( 'playground-builder', 'playgroundBuilderConfig', $config );
 							<button class="playground-builder__copy" type="button" data-copy><?php echo esc_html__( 'Copy link', 'playground-builder' ); ?></button>
 							<a class="playground-builder__open" href="https://playground.wordpress.net/" target="_blank" rel="noreferrer" data-open><?php echo esc_html__( 'Open', 'playground-builder' ); ?></a>
 						</div>
-						<button class="playground-builder__json-toggle" type="button" data-json-toggle><?php echo esc_html__( 'View blueprint JSON', 'playground-builder' ); ?></button>
-						<pre class="playground-builder__json playground-builder__scroll" data-json></pre>
 					</div>
 				</aside>
 			</div>
