@@ -589,7 +589,12 @@
 			button.textContent = item.type === 'theme'
 				? ( added ? strings.usingTheme : strings.useTheme )
 				: ( added ? strings.added : strings.add );
-			button.disabled = added;
+			button.disabled = added && item.type === 'theme';
+			button.classList.toggle( 'playground-builder__add--added', added );
+
+			if ( added && item.type === 'plugin' ) {
+				button.setAttribute( 'aria-label', strings.removeItem.replace( '%s', item.name ) );
+			}
 			body.append( title, meta, desc );
 
 			if ( item.previewLink ) {
@@ -605,7 +610,9 @@
 				body.append( previewNote );
 			}
 
-			if ( ! added ) {
+			if ( added && item.type === 'plugin' ) {
+				button.addEventListener( 'click', () => removeItem( item.slug, item.type ) );
+			} else if ( ! added ) {
 				button.addEventListener( 'click', () => addItem( item ) );
 			}
 
