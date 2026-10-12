@@ -103,6 +103,9 @@ $strings = [
 	/* translators: %s: plugin last updated date. */
 	'lastUpdated' => __( 'Updated %s', 'playground-builder' ),
 	'blueprintRequired' => __( 'Blueprint required', 'playground-builder' ),
+	'favoritesPlaceholder' => __( 'WordPress.org username', 'playground-builder' ),
+	'favoritesHelp' => __( 'Enter a WordPress.org username to browse their favorite plugins and themes.', 'playground-builder' ),
+	'noFavorites' => __( 'No favorites found for this WordPress.org username.', 'playground-builder' ),
 	'noMatches' => __( 'No matches. Try another search term.', 'playground-builder' ),
 	'searchReady' => __( 'Press Search to look up this term.', 'playground-builder' ),
 	'playgroundPreview' => __( 'Preview in WordPress Playground', 'playground-builder' ),
@@ -223,13 +226,15 @@ wp_localize_script( 'playground-builder', 'playgroundBuilderConfig', $config );
 						<div class="playground-builder__tabs" role="tablist" aria-label="<?php echo esc_attr__( 'Directory type', 'playground-builder' ); ?>">
 							<button class="playground-builder__tab" type="button" role="tab" aria-selected="true" data-tab="plugins"><?php echo esc_html__( 'Plugins', 'playground-builder' ); ?></button>
 							<button class="playground-builder__tab" type="button" role="tab" aria-selected="false" data-tab="themes"><?php echo esc_html__( 'Themes', 'playground-builder' ); ?></button>
+							<button class="playground-builder__tab" type="button" role="tab" aria-selected="false" data-tab="favorites"><?php echo esc_html__( 'Favorites', 'playground-builder' ); ?></button>
 						</div>
 
 						<form class="playground-builder__search-form" data-search-form>
 							<label class="screen-reader-text" for="playground-builder-query"><?php echo esc_html__( 'Search wordpress.org', 'playground-builder' ); ?></label>
-							<input id="playground-builder-query" type="search" data-query>
+							<input id="playground-builder-query" type="search" aria-describedby="playground-builder-favorites-help" data-query>
 							<button class="playground-builder__primary" type="submit"><?php echo esc_html__( 'Search', 'playground-builder' ); ?></button>
 						</form>
+						<p id="playground-builder-favorites-help" class="playground-builder__featured-note" data-favorites-help hidden><?php echo esc_html__( 'Enter a WordPress.org username to browse their favorite plugins and themes.', 'playground-builder' ); ?></p>
 						<p class="playground-builder__featured-note" data-featured-info hidden>
 							<?php echo esc_html__( 'Featured plugins highlight rotating hidden gems from WordPress.org and refresh every two weeks.', 'playground-builder' ); ?>
 							<a href="https://wordpress.slack.com/archives/C1LBM36LC/p1772211796347839" target="_blank" rel="noreferrer"><?php echo esc_html__( 'Discuss in Make WordPress Slack', 'playground-builder' ); ?></a>

@@ -30,6 +30,7 @@
 		query: app.querySelector( '[data-query]' ),
 		form: app.querySelector( '[data-search-form]' ),
 		featuredInfo: app.querySelector( '[data-featured-info]' ),
+		favoritesHelp: app.querySelector( '[data-favorites-help]' ),
 		results: app.querySelector( '[data-results]' ),
 		selected: app.querySelector( '[data-selected]' ),
 		selectionSummary: app.querySelector( '[data-selection-summary]' ),
@@ -271,7 +272,7 @@
 		};
 	}
 
-	function apiUrl( tab, query ) {
+	function apiUrl( tab, query, page = 1, favorites = false ) {
 		const base = tab === 'plugins'
 			? 'https://api.wordpress.org/plugins/info/1.2/?action=query_plugins'
 			: 'https://api.wordpress.org/themes/info/1.2/?action=query_themes';
@@ -279,6 +280,7 @@
 		const trimmed = ( query || '' ).trim();
 
 		params.set( 'request[per_page]', '24' );
+		params.set( 'request[page]', String( page ) );
 
 		if ( tab === 'themes' ) {
 			params.set( 'request[fields][screenshot_url]', '1' );
@@ -291,7 +293,15 @@
 			params.set( 'request[fields][last_updated]', '1' );
 		}
 
-		if ( trimmed ) {
+		const user = favorites ? trimmed : '';
+
+		if ( user ) {
+			// The plugins API queries favorites by user alone; themes also need browse.
+			if ( tab === 'themes' ) {
+				params.set( 'request[browse]', 'favorites' );
+			}
+			params.set( 'request[user]', user );
+		} else if ( trimmed ) {
 			params.set( 'request[search]', trimmed );
 		} else {
 			params.set( 'request[browse]', tab === 'plugins' ? 'featured' : 'popular' );
@@ -301,6 +311,10 @@
 	}
 
 	function fallback( tab, query ) {
+		if ( state.tab === 'favorites' ) {
+			return [];
+		}
+
 		const source = tab === 'plugins' ? config.fallback.plugins : config.fallback.themes;
 		const needle = ( query || '' ).trim().toLowerCase();
 		const filtered = needle
@@ -545,15 +559,15 @@
 		if ( state.rawResults.length === 0 ) {
 			const empty = document.createElement( 'div' );
 			empty.className = 'playground-builder__state';
-			empty.textContent = state.query.trim() !== state.searchedQuery.trim() ? strings.searchReady : strings.noMatches;
+			empty.textContent = state.query.trim() !== state.searchedQuery.trim()
+				? strings.searchReady
+				: state.tab === 'favorites' ? ( state.query.trim() ? strings.noFavorites : strings.favoritesHelp ) : strings.noMatches;
 			els.results.append( empty );
 			return;
 		}
 
-		const selectedSlugs = ( state.tab === 'plugins' ? state.selectedPlugins : state.selectedThemes ).map( ( item ) => item.slug );
-
 		state.rawResults.forEach( ( item ) => {
-			const added = selectedSlugs.indexOf( item.slug ) >= 0;
+			const added = ( item.type === 'plugin' ? state.selectedPlugins : state.selectedThemes ).some( ( selected ) => selected.slug === item.slug );
 			const row = document.createElement( 'div' );
 			const body = document.createElement( 'div' );
 			const title = document.createElement( 'div' );
@@ -583,7 +597,9 @@
 				title.textContent = item.name;
 			}
 
-			meta.textContent = item.meta;
+			meta.textContent = state.tab === 'favorites'
+				? joinMeta( [ item.type === 'plugin' ? strings.plugin : strings.theme, item.meta ] )
+				: item.meta;
 			desc.textContent = item.desc;
 			button.type = 'button';
 			button.textContent = item.type === 'theme'
@@ -733,7 +749,10 @@
 			tab.setAttribute( 'aria-selected', active ? 'true' : 'false' );
 		} );
 
-		els.query.placeholder = state.tab === 'plugins' ? strings.searchPluginsPlaceholder : strings.searchThemesPlaceholder;
+		els.query.placeholder = state.tab === 'favorites' ? strings.favoritesPlaceholder
+			: state.tab === 'plugins' ? strings.searchPluginsPlaceholder : strings.searchThemesPlaceholder;
+		els.query.setAttribute( 'aria-label', state.tab === 'favorites' ? strings.favoritesPlaceholder : els.query.placeholder );
+		els.favoritesHelp.hidden = state.tab !== 'favorites';
 		els.featuredInfo.hidden = state.tab !== 'plugins' || state.query.trim() !== '';
 	}
 
@@ -744,10 +763,14 @@
 		renderSummary();
 	}
 
+	let searchRequest = 0;
+
 	async function runSearch() {
+		clearTimeout( state.searchTimer );
+		const request = ++searchRequest;
 		const tab = state.tab;
 		const query = state.query;
-		const customResult = customUrlResult( query, tab );
+		const customResult = tab === 'favorites' ? null : customUrlResult( query, tab );
 		state.searchedQuery = query;
 		state.loading = true;
 		state.error = '';
@@ -760,19 +783,56 @@
 			return;
 		}
 
-		try {
-			const response = await fetch( apiUrl( tab, query ) );
+		if ( tab === 'favorites' && ! query.trim() ) {
+			state.rawResults = [];
+			state.loading = false;
+			render();
+			return;
+		}
 
-			if ( ! response.ok ) {
-				throw new Error( 'HTTP ' + response.status );
+		try {
+			const types = tab === 'favorites' ? [ 'plugins', 'themes' ] : [ tab ];
+			const results = await Promise.all( types.map( async ( type ) => {
+				const list = [];
+				let page = 1;
+				let pages = 1;
+
+				do {
+					const response = await fetch( apiUrl( type, query, page, tab === 'favorites' ) );
+
+					if ( ! response.ok ) {
+						throw new Error( 'HTTP ' + response.status );
+					}
+
+					const data = await response.json();
+
+					if ( request !== searchRequest ) {
+						return;
+					}
+
+					if ( data.error ) {
+						throw new Error( data.error );
+					}
+
+					list.push( ...( type === 'plugins' ? data.plugins || [] : data.themes || [] ) );
+					pages = tab === 'favorites' ? Number( data.info && data.info.pages ) || 1 : 1;
+					page++;
+				} while ( page <= pages );
+
+				return list.map( ( item ) => normalize( item, type ) );
+			} ) );
+
+			if ( request !== searchRequest ) {
+				return;
 			}
 
-			const data = await response.json();
-			const list = tab === 'plugins' ? data.plugins || [] : data.themes || [];
-
-			state.rawResults = list.map( ( item ) => normalize( item, tab ) );
+			state.rawResults = results.flat();
 			state.loading = false;
 		} catch ( error ) {
+			if ( request !== searchRequest ) {
+				return;
+			}
+
 			const fallbackResults = fallback( tab, query );
 			state.rawResults = fallbackResults;
 			state.loading = false;
@@ -848,7 +908,12 @@
 				return;
 			}
 
+			const previousTab = state.tab;
 			state.tab = tab.dataset.tab;
+			if ( previousTab === 'favorites' || state.tab === 'favorites' ) {
+				state.query = '';
+				els.query.value = '';
+			}
 			state.rawResults = [];
 			runSearch();
 		} );
@@ -861,8 +926,9 @@
 	} );
 
 	els.query.addEventListener( 'input', () => {
+		searchRequest++;
 		state.query = els.query.value;
-		const customResult = customUrlResult( state.query, state.tab );
+		const customResult = state.tab === 'favorites' ? null : customUrlResult( state.query, state.tab );
 
 		if ( customResult ) {
 			clearTimeout( state.searchTimer );
