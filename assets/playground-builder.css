@@ -489,7 +489,8 @@ a:focus-visible {
 	line-height: 1.35;
 }
 
-.playground-builder select {
+.playground-builder select,
+.playground-builder [data-custom-landing] {
 	width: 100%;
 	border: 1px solid #d7dbe3;
 	border-radius: 9px;
