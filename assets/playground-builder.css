@@ -368,10 +368,13 @@ a:focus-visible {
 	padding: 7px 14px;
 }
 
-.playground-builder__add[disabled] {
+.playground-builder__add--added {
 	border-color: #bfe6cf;
 	background: #eafaf0;
 	color: #1f9d57;
+}
+
+.playground-builder__add[disabled] {
 	cursor: default;
 }
 
