@@ -211,7 +211,7 @@ wp_localize_script( 'playground-builder', 'playgroundBuilderConfig', $config );
 						?>
 					</p>
 				</div>
-				<a class="playground-builder__external" href="https://akirk.github.io/playground-step-library/" target="_blank" rel="noreferrer">
+				<a class="playground-builder__external" data-advanced-blueprint href="https://akirk.github.io/playground-step-library/" target="_blank" rel="noreferrer">
 					<?php echo esc_html__( 'Create more advanced blueprints', 'playground-builder' ); ?>
 				</a>
 			</header>

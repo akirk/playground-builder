@@ -40,6 +40,7 @@
 		customLandingPage: app.querySelector( '[data-custom-landing]' ),
 		link: app.querySelector( '[data-link]' ),
 		open: app.querySelector( '[data-open]' ),
+		advancedBlueprint: app.querySelector( '[data-advanced-blueprint]' ),
 		copy: app.querySelector( '[data-copy]' ),
 		buildSummary: app.querySelector( '[data-build-summary]' ),
 		outputLabel: app.querySelector( '[data-output-label]' ),
@@ -390,6 +391,23 @@
 		return blueprint;
 	}
 
+	function advancedBlueprintUrl() {
+		const params = new URLSearchParams();
+		const items = state.selectedPlugins.concat( state.selectedThemes );
+
+		items.forEach( ( item, index ) => {
+			params.set( 'step[' + index + ']', item.type === 'theme' ? 'installTheme' : 'installPlugin' );
+			params.set( 'url[' + index + ']', item.isCustom ? item.desc : item.slug );
+
+			if ( item.resourceData && item.resourceData.resource === 'git:directory' && item.targetFolderName ) {
+				const slugParam = item.type === 'theme' ? 'themeSlug' : 'pluginSlug';
+				params.set( slugParam + '[' + index + ']', item.targetFolderName );
+			}
+		} );
+
+		return 'https://akirk.github.io/playground-step-library/' + ( items.length ? '?' + params.toString() : '' );
+	}
+
 	function currentLink() {
 		if ( effectiveLinkMode() === 'blueprint' ) {
 			return blueprintUrl();
@@ -663,6 +681,7 @@
 		els.link.classList.toggle( 'is-blueprint', linkMode === 'blueprint' );
 		els.outputLabel.textContent = linkMode === 'blueprint' ? strings.blueprintJson : strings.shareableLink;
 		els.open.href = link;
+		els.advancedBlueprint.href = advancedBlueprintUrl();
 		els.copy.textContent = state.copied ? strings.copied : strings.copyLink;
 		els.copy.classList.toggle( 'is-copied', state.copied );
 		els.customLandingPage.hidden = state.landingPage !== 'custom';
