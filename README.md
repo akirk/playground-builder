@@ -15,7 +15,7 @@ Build shareable WordPress Playground links: pick plugins, themes, WordPress and 
 
 [Try it in WordPress Playground](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/akirk/playground-builder/main/blueprint.json)
 
-[Try it in OpenStation](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/akirk/playground-builder/main/blueprint-openstation.json) — the same app opened in desktop mode with the [OpenStation](https://github.com/WordPress/openstation) plugin.
+[Try it on GitHub Pages](https://akirk.github.io/playground-builder/)
 
 Playground Builder is a WordPress app for creating shareable WordPress Playground links. It helps you build a Playground configuration by searching WordPress.org plugins and themes, choosing runtime settings, and copying either a Query API link or a full blueprint link.
 
@@ -28,13 +28,18 @@ The app is powered by the [WpApp framework](https://github.com/akirk/wp-app), so
 ### Features
 
 - Search WordPress.org plugins and themes.
+- Browse a WordPress.org user's favorite plugins and themes together.
 - Add multiple plugins and one active theme to a Playground build.
+- Remove selected plugins by clicking their **Added** button in search results.
+- Switching between Plugins, Themes, and Favorites focuses the search field for immediate typing.
 - Use GitHub, GitLab, or ZIP URLs for custom plugins and themes.
 - Choose WordPress version, PHP version, site language, and landing page.
 - Generate WordPress Playground Query API links for simple builds.
 - Generate blueprint links when custom package sources require them.
-- Preview the generated blueprint JSON.
-- Copy the finished Playground link.
+- View the shareable URL in Query API mode or formatted JSON in Blueprint mode.
+- Copy or open the finished Playground link in either mode.
+- Carry selected plugins and themes into the advanced blueprint editor.
+- Run as a static site on GitHub Pages or as a WordPress plugin.
 - Includes fallback plugin and theme suggestions when wordpress.org cannot be reached.
 - Translatable with the `playground-builder` text domain.
 
@@ -66,7 +71,7 @@ Both versions use the unchanged WordPress template (`templates/index.php`) and t
 
 ### Where does the app appear?
 
-The app is available at `/playground-builder/` after activation.
+The WordPress plugin is available at `/playground-builder/` after activation. You can also use the [GitHub Pages app](https://akirk.github.io/playground-builder/) without installing WordPress.
 
 ### Does this install plugins or themes on my WordPress site?
 
@@ -86,7 +91,7 @@ Searching queries the WordPress.org plugin and theme directories, so results nee
 
 ### Can I build more complicated blueprints?
 
-For steps beyond installing packages and setting versions, the app links out to the [Playground Step Library](https://akirk.github.io/playground-step-library/), which covers the full blueprint step vocabulary.
+For steps beyond installing packages and setting versions, click **Create more advanced blueprints** to open the [Playground Step Library](https://akirk.github.io/playground-step-library/), which covers the full blueprint step vocabulary. Your selected plugins and theme carry over as editable installation steps, including custom ZIP URLs and Git repositories with their branch and directory settings. With no selections, the link opens an empty editor.
 
 ## Screenshots
 
