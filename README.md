@@ -53,7 +53,7 @@ python3 -m http.server 8080 --directory build/static
 
 Open `http://localhost:8080`. The output contains only HTML, CSS, and JavaScript, with relative asset URLs that work under a GitHub Pages repository path. The static interface is in English and defaults the Playground language to English (US); the language picker still supports all listed locales.
 
-Both versions use `includes/config.php`, `includes/builder.php`, and the same assets. `templates/index.php` supplies WordPress translations, locale, asset loading, and WpApp hooks; `scripts/build-static.php` supplies English labels and renders the static HTML. Make interface and default changes in the shared files.
+Both versions use the unchanged WordPress template (`templates/index.php`) and the same assets. `scripts/build-static.php` renders that template using a CLI-only WordPress/WpApp polyfill in `scripts/wordpress-polyfill.php`. Make interface and default changes in the WordPress template; PHP runs only during the static build. Build scripts are excluded from plugin releases.
 
 ### WordPress plugin
 
