@@ -11,6 +11,8 @@ tests export-ignore
 
 # Build/Dev
 composer.lock export-ignore
+scripts export-ignore
+build export-ignore
 
 # WordPress.org assets (deployed to the SVN assets/ directory, not shipped)
 .wordpress-org export-ignore

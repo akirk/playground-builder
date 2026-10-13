@@ -40,6 +40,23 @@ The app is powered by the [WpApp framework](https://github.com/akirk/wp-app), so
 
 ## Installation
 
+### Static site / GitHub Pages
+
+The same app can run on GitHub Pages without WordPress. In the repository's **Settings → Pages**, select **GitHub Actions** as the source. The `Deploy GitHub Pages` workflow builds and deploys on pushes to `main`, and can also be run manually. Pull requests build the site without deploying it.
+
+To build and preview locally (PHP 7.4 or newer is required only for the build):
+
+```sh
+php scripts/build-static.php
+python3 -m http.server 8080 --directory build/static
+```
+
+Open `http://localhost:8080`. The output contains only HTML, CSS, and JavaScript, with relative asset URLs that work under a GitHub Pages repository path. The static interface is in English and defaults the Playground language to English (US); the language picker still supports all listed locales.
+
+Both versions use the unchanged WordPress template (`templates/index.php`) and the same assets. `scripts/build-static.php` renders that template using a CLI-only WordPress/WpApp polyfill in `scripts/wordpress-polyfill.php`. Make interface and default changes in the WordPress template; PHP runs only during the static build. Build scripts are excluded from plugin releases.
+
+### WordPress plugin
+
 1. Upload the `playground-builder` directory to `wp-content/plugins/`.
 2. Run `composer install` if the `vendor/` directory is not already present.
 3. Activate **Playground Builder** in WordPress.
