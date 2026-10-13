@@ -916,6 +916,7 @@
 			}
 			state.rawResults = [];
 			runSearch();
+			els.query.focus();
 		} );
 	} );
 
