@@ -797,6 +797,33 @@
 		renderSummary();
 	}
 
+	async function exactPluginMatch( query, tab ) {
+		const slug = query.trim().toLowerCase();
+
+		if ( tab !== 'plugins' || ! /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test( slug ) ) {
+			return null;
+		}
+
+		const params = new URLSearchParams( {
+			action: 'plugin_information',
+			'request[slug]': slug,
+			'request[fields][short_description]': '1',
+			'request[fields][icons]': '1',
+			'request[fields][active_installs]': '1',
+			'request[fields][preview_link]': '1',
+			'request[fields][last_updated]': '1',
+			'request[fields][sections]': '0',
+		} );
+		const response = await fetch( 'https://api.wordpress.org/plugins/info/1.2/?' + params.toString() );
+
+		if ( ! response.ok ) {
+			return null;
+		}
+
+		const data = await response.json();
+		return ! data.error && data.slug === slug ? normalize( data, 'plugins' ) : null;
+	}
+
 	let searchRequest = 0;
 
 	async function runSearch() {
@@ -826,7 +853,7 @@
 
 		try {
 			const types = tab === 'favorites' ? [ 'plugins', 'themes' ] : [ tab ];
-			const results = await Promise.all( types.map( async ( type ) => {
+			const [ searchResult, exactResult ] = await Promise.allSettled( [ Promise.all( types.map( async ( type ) => {
 				const list = [];
 				let page = 1;
 				let pages = 1;
@@ -854,13 +881,16 @@
 				} while ( page <= pages );
 
 				return list.map( ( item ) => normalize( item, type ) );
-			} ) );
+			} ) ), exactPluginMatch( query, tab ) ] );
 
 			if ( request !== searchRequest ) {
 				return;
 			}
 
-			state.rawResults = results.flat();
+			const results = searchResult.status === 'fulfilled' ? searchResult.value.flat() : fallback( tab, query );
+			const exact = exactResult.status === 'fulfilled' ? exactResult.value : null;
+			state.rawResults = exact ? [ exact, ...results.filter( ( item ) => item.slug !== exact.slug ) ] : results;
+			state.error = searchResult.status === 'rejected' && ! state.rawResults.length ? strings.connectionError : '';
 			state.loading = false;
 		} catch ( error ) {
 			if ( request !== searchRequest ) {
