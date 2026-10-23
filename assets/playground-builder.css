@@ -493,7 +493,10 @@ a:focus-visible {
 }
 
 .playground-builder select,
-.playground-builder [data-custom-landing] {
+.playground-builder [data-custom-landing],
+.playground-builder [data-homepage-title],
+.playground-builder [data-homepage-content] {
+	box-sizing: border-box;
 	width: 100%;
 	border: 1px solid #d7dbe3;
 	border-radius: 9px;
@@ -611,4 +614,12 @@ a:focus-visible {
 		justify-content: center;
 		text-align: center;
 	}
+}
+
+.playground-builder [data-homepage-fields] .playground-builder__field + .playground-builder__field {
+	margin-top: 10px;
+}
+
+.playground-builder [data-homepage-content] {
+	resize: vertical;
 }

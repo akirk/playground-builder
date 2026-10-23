@@ -21,6 +21,8 @@
 		phpVersion: config.defaultPhpVersion,
 		landingPage: config.defaultLandingPage,
 		customLandingPage: '/',
+		homepageTitle: app.querySelector( '[data-homepage-title]' ).value,
+		homepageContent: '',
 		linkMode: 'query',
 		copied: false,
 	};
@@ -39,6 +41,9 @@
 		phpVersion: app.querySelector( '[data-php-version]' ),
 		landingPage: app.querySelector( '[data-landing-page]' ),
 		customLandingPage: app.querySelector( '[data-custom-landing]' ),
+		homepageFields: app.querySelector( '[data-homepage-fields]' ),
+		homepageTitle: app.querySelector( '[data-homepage-title]' ),
+		homepageContent: app.querySelector( '[data-homepage-content]' ),
 		link: app.querySelector( '[data-link]' ),
 		open: app.querySelector( '[data-open]' ),
 		advancedBlueprint: app.querySelector( '[data-advanced-blueprint]' ),
@@ -402,6 +407,22 @@
 			} );
 		} );
 
+		if ( state.landingPage === 'content' ) {
+			const page = JSON.stringify( {
+				post_type: 'page',
+				post_status: 'publish',
+				post_title: state.homepageTitle,
+				post_content: state.homepageContent,
+			} ).replace( /\\/g, '\\\\' ).replace( /'/g, "\\'" );
+			blueprint.steps.push( {
+				step: 'runPHP',
+				code: "<?php require_once '/wordpress/wp-load.php';\n" +
+					"$page_id = wp_insert_post( wp_slash( json_decode( '" + page + "', true ) ), true );\n" +
+					"if ( is_wp_error( $page_id ) ) { throw new Exception( $page_id->get_error_message() ); }\n" +
+					"update_option( 'page_on_front', $page_id );\nupdate_option( 'show_on_front', 'page' );",
+			} );
+		}
+
 		return blueprint;
 	}
 
@@ -419,7 +440,15 @@
 			}
 		} );
 
-		return 'https://akirk.github.io/playground-step-library/' + ( items.length ? '?' + params.toString() : '' );
+		if ( state.landingPage === 'content' ) {
+			const index = items.length;
+			params.set( 'step[' + index + ']', 'addPage' );
+			params.set( 'title[' + index + ']', state.homepageTitle );
+			params.set( 'content[' + index + ']', state.homepageContent );
+			params.set( 'homepage[' + index + ']', 'true' );
+		}
+
+		return 'https://akirk.github.io/playground-step-library/' + ( params.size ? '?' + params.toString() : '' );
 	}
 
 	function currentLink() {
@@ -474,7 +503,7 @@
 	}
 
 	function requiresBlueprint() {
-		return state.selectedPlugins.some( ( plugin ) => plugin.isCustom ) || state.selectedThemes.some( ( theme ) => theme.isCustom );
+		return state.landingPage === 'content' || state.selectedPlugins.some( ( plugin ) => plugin.isCustom ) || state.selectedThemes.some( ( theme ) => theme.isCustom );
 	}
 
 	function isDefaultPlayground() {
@@ -487,6 +516,10 @@
 	}
 
 	function currentLandingPage() {
+		if ( state.landingPage === 'content' ) {
+			return '/';
+		}
+
 		if ( state.landingPage !== 'custom' ) {
 			return state.landingPage;
 		}
@@ -708,6 +741,7 @@
 		els.copy.textContent = state.copied ? strings.copied : strings.copyLink;
 		els.copy.classList.toggle( 'is-copied', state.copied );
 		els.customLandingPage.hidden = state.landingPage !== 'custom';
+		els.homepageFields.hidden = state.landingPage !== 'content';
 	}
 
 	function renderFormatCaption( linkMode ) {
@@ -763,6 +797,33 @@
 		renderSummary();
 	}
 
+	async function exactPluginMatch( query, tab ) {
+		const slug = query.trim().toLowerCase();
+
+		if ( tab !== 'plugins' || ! /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test( slug ) ) {
+			return null;
+		}
+
+		const params = new URLSearchParams( {
+			action: 'plugin_information',
+			'request[slug]': slug,
+			'request[fields][short_description]': '1',
+			'request[fields][icons]': '1',
+			'request[fields][active_installs]': '1',
+			'request[fields][preview_link]': '1',
+			'request[fields][last_updated]': '1',
+			'request[fields][sections]': '0',
+		} );
+		const response = await fetch( 'https://api.wordpress.org/plugins/info/1.2/?' + params.toString() );
+
+		if ( ! response.ok ) {
+			return null;
+		}
+
+		const data = await response.json();
+		return ! data.error && data.slug === slug ? normalize( data, 'plugins' ) : null;
+	}
+
 	let searchRequest = 0;
 
 	async function runSearch() {
@@ -792,7 +853,7 @@
 
 		try {
 			const types = tab === 'favorites' ? [ 'plugins', 'themes' ] : [ tab ];
-			const results = await Promise.all( types.map( async ( type ) => {
+			const [ searchResult, exactResult ] = await Promise.allSettled( [ Promise.all( types.map( async ( type ) => {
 				const list = [];
 				let page = 1;
 				let pages = 1;
@@ -820,13 +881,16 @@
 				} while ( page <= pages );
 
 				return list.map( ( item ) => normalize( item, type ) );
-			} ) );
+			} ) ), exactPluginMatch( query, tab ) ] );
 
 			if ( request !== searchRequest ) {
 				return;
 			}
 
-			state.rawResults = results.flat();
+			const results = searchResult.status === 'fulfilled' ? searchResult.value.flat() : fallback( tab, query );
+			const exact = exactResult.status === 'fulfilled' ? exactResult.value : null;
+			state.rawResults = exact ? [ exact, ...results.filter( ( item ) => item.slug !== exact.slug ) ] : results;
+			state.error = searchResult.status === 'rejected' && ! state.rawResults.length ? strings.connectionError : '';
 			state.loading = false;
 		} catch ( error ) {
 			if ( request !== searchRequest ) {
@@ -983,6 +1047,14 @@
 		state.customLandingPage = els.customLandingPage.value;
 		state.copied = false;
 		renderSummary();
+	} );
+
+	[ 'homepageTitle', 'homepageContent' ].forEach( ( field ) => {
+		els[ field ].addEventListener( 'input', () => {
+			state[ field ] = els[ field ].value;
+			state.copied = false;
+			renderSummary();
+		} );
 	} );
 
 	els.copy.addEventListener( 'click', copyLink );

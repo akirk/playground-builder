@@ -72,6 +72,7 @@ $landings = [
 	[ 'value' => '/wp-admin/', 'label' => __( 'Dashboard (wp-admin)', 'playground-builder' ) ],
 	[ 'value' => '/wp-admin/site-editor.php', 'label' => __( 'Site Editor', 'playground-builder' ) ],
 	[ 'value' => '/', 'label' => __( 'Homepage', 'playground-builder' ) ],
+	[ 'value' => 'content', 'label' => __( 'Custom content', 'playground-builder' ) ],
 	[ 'value' => 'custom', 'label' => __( 'Custom URL', 'playground-builder' ) ],
 ];
 
@@ -291,6 +292,16 @@ wp_localize_script( 'playground-builder', 'playgroundBuilderConfig', $config );
 							</select>
 							<input type="text" value="/" placeholder="<?php echo esc_attr__( '/sample-page/', 'playground-builder' ); ?>" data-custom-landing hidden>
 						</label>
+						<div data-homepage-fields hidden>
+							<label class="playground-builder__field">
+								<span class="playground-builder__label"><?php echo esc_html__( 'Page title', 'playground-builder' ); ?></span>
+								<input type="text" data-homepage-title value="<?php echo esc_attr__( 'Home', 'playground-builder' ); ?>">
+							</label>
+							<label class="playground-builder__field">
+								<span class="playground-builder__label"><?php echo esc_html__( 'Page content (HTML or blocks)', 'playground-builder' ); ?></span>
+								<textarea data-homepage-content rows="6"></textarea>
+							</label>
+						</div>
 					</div>
 
 					<div class="playground-builder__output">
