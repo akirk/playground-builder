@@ -3,7 +3,7 @@
  * Plugin Name: Playground Builder
  * Plugin URI: https://wpapps.kirk.at/apps/playground-builder/
  * Description: Build shareable WordPress Playground links: pick plugins, themes, WordPress and PHP versions, a language and a start page, then copy the link.
- * Version: 1.0.0
+ * Version: 1.0.0+c48c0114d1d1
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Alex Kirk
