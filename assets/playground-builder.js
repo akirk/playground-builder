@@ -173,7 +173,7 @@
 				type,
 				isCustom: true,
 				resourceData: {
-					resource: 'url',
+					resource: 'wordpress.org/plugins',
 					url: value,
 				},
 				targetFolderName: sanitizeFolderName( name ),
@@ -214,7 +214,7 @@
 
 		if ( ref ) {
 			resourceData.ref = ref;
-			resourceData.refType = refType( ref );
+			resourceData.refType = 'commit';
 		}
 
 		if ( directory ) {
@@ -488,7 +488,7 @@
 		}
 
 		if ( state.phpVersion !== config.defaultPhpVersion ) {
-			params.set( 'php', state.phpVersion );
+			params.set( 'php-version', state.phpVersion );
 		}
 
 		if ( currentLandingPage() !== config.defaultLandingPage ) {
