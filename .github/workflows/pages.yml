@@ -25,6 +25,16 @@ jobs:
           coverage: none
       - name: Build static site
         run: php scripts/build-static.php
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test library
+        run: npm install --prefix "$RUNNER_TEMP/playground-builder-browser" --ignore-scripts --no-package-lock --no-audit --no-fund playwright@1.65.1
+      - name: Test generated links through the real browser UI
+        env:
+          NODE_PATH: ${{ runner.temp }}/playground-builder-browser/node_modules
+        run: node --test tests/share-links.cjs
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
